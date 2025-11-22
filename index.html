@@ -1,24 +1,24 @@
-<!DOCTYPE html>
+
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Jeopardy Quiz</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- compact header removed per your request -->
-  <div id="scorewrap"></div>
 
   <div class="board-container">
     <div class="board" id="board"></div>
   </div>
 
   <!-- Modal for Questions -->
-  <div id="modal" class="modal" aria-hidden="true">
+  <div id="modal" class="modal">
     <div class="modal-content">
-      <button id="closeBtn" class="close" aria-label="Close">&times;</button>
+      <span id="closeBtn" class="close">&times;</span>
       <h2 id="questionText"></h2>
-      <button id="showAnswerBtn" style="display:none">Show Answer</button>
+      <button id="showAnswerBtn">Show Answer</button>
+      <p id="answerText" style="display:none;"></p>
     </div>
   </div>
 
