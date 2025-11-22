@@ -64,6 +64,16 @@ document.addEventListener("DOMContentLoaded", () => {
     scoreboard.appendChild(div);
   });
 
+  // ==== LOAD scores from sessionStorage if exist ====
+  const savedScores = sessionStorage.getItem("scores");
+  if (savedScores) {
+    const parsed = JSON.parse(savedScores);
+    parsed.forEach((score, i) => {
+      teams[i].score = score;
+      document.getElementById(`score-${i}`).textContent = score;
+    });
+  }
+
   // ===== Build Board Headers =====
   data.categories.forEach(cat => {
     const header = document.createElement("div");
@@ -93,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===== Show Answer (unchanged) =====
+  // ===== Show Answer =====
   showAnswerBtn.onclick = () => {
     questionText.textContent = questionText.dataset.answer;
   }
@@ -109,13 +119,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const idx = e.target.dataset.index;
       teams[idx].score += currentQuestionValue;
       document.getElementById(`score-${idx}`).textContent = teams[idx].score;
-      e.target.textContent = `+${currentQuestionValue}`; // show correct points
+      e.target.textContent = `+${currentQuestionValue}`;
     }
     if(e.target.classList.contains("subtract-btn")){
       const idx = e.target.dataset.index;
       teams[idx].score -= 100;
       document.getElementById(`score-${idx}`).textContent = teams[idx].score;
     }
+
+    // ==== SAVE current scores to session storage ====
+    sessionStorage.setItem("scores", JSON.stringify(teams.map(t => t.score)));
   });
 
 });
