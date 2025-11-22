@@ -88,13 +88,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // mark used
         box.classList.add("used");
         box.style.pointerEvents = "none";
-        box.textContent = "";  // <<< HIDE NUMBER AFTER CLICK
       });
       board.appendChild(box);
     }
   });
 
-  // ===== Show Answer =====
+  // ===== Show Answer (unchanged) =====
   showAnswerBtn.onclick = () => {
     questionText.textContent = questionText.dataset.answer;
   }
@@ -110,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const idx = e.target.dataset.index;
       teams[idx].score += currentQuestionValue;
       document.getElementById(`score-${idx}`).textContent = teams[idx].score;
-      e.target.textContent = `+${currentQuestionValue}`;
+      e.target.textContent = `+${currentQuestionValue}`; // show correct points
     }
     if(e.target.classList.contains("subtract-btn")){
       const idx = e.target.dataset.index;
@@ -118,4 +117,5 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById(`score-${idx}`).textContent = teams[idx].score;
     }
   });
+
 });
