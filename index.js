@@ -64,21 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     scoreboard.appendChild(div);
   });
 
-  // ==== LOAD scores from sessionStorage if exist ====
-  const savedScores = sessionStorage.getItem("scores");
-  if (savedScores) {
-    const parsed = JSON.parse(savedScores);
-    parsed.forEach((score, i) => {
-      teams[i].score = score;
-      document.getElementById(`score-${i}`).textContent = score;
-    });
-  }
-
-  // ==== LOAD used boxes ====
-  const usedBoxes = JSON.parse(sessionStorage.getItem("usedBoxes")) || [];
-
-  // ===== Build Board =====
-  const pointsValues = [100,200,300,400,500,600,700,800,900,1000];
+  // ===== Build Board Headers =====
   data.categories.forEach(cat => {
     const header = document.createElement("div");
     header.className = "header";
@@ -86,46 +72,36 @@ document.addEventListener("DOMContentLoaded", () => {
     board.appendChild(header);
   });
 
-  pointsValues.forEach((points, rowIndex) => {
-    data.categories.forEach((_, colIndex) => {
+  // ===== Build Question Boxes =====
+  const pointsValues = [100,200,300,400,500,600,700,800,900,1000];
+  pointsValues.forEach(points => {
+    for(let c=0; c<data.categories.length; c++){
       const box = document.createElement("div");
       box.className = "box";
       box.textContent = points;
-
-      const boxID = `${rowIndex}-${colIndex}`; // UNIQUE ID
-
-      // if used, disable it
-      if (usedBoxes.includes(boxID)) {
-        box.classList.add("used");
-        box.style.pointerEvents = "none";
-      }
-
       box.addEventListener("click", () => {
         currentQuestionValue = points;
-        questionText.textContent = data.questions[points][colIndex];
-        questionText.dataset.answer = data.answers[points][colIndex];
+        questionText.textContent = data.questions[points][c];
+        questionText.dataset.answer = data.answers[points][c];
         modal.style.display = "flex";
 
-        // save used box
+        // mark used
         box.classList.add("used");
         box.style.pointerEvents = "none";
-        usedBoxes.push(boxID);
-        sessionStorage.setItem("usedBoxes", JSON.stringify(usedBoxes));
       });
-
       board.appendChild(box);
-    });
+    }
   });
 
-  // ===== Show Answer =====
+  // ===== Show Answer (unchanged) =====
   showAnswerBtn.onclick = () => {
     questionText.textContent = questionText.dataset.answer;
-  };
+  }
 
   // ===== Close Modal =====
   closeBtn.onclick = () => {
     modal.style.display = "none";
-  };
+  }
 
   // ===== Scoreboard Buttons =====
   scoreboard.addEventListener("click", e => {
@@ -133,16 +109,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const idx = e.target.dataset.index;
       teams[idx].score += currentQuestionValue;
       document.getElementById(`score-${idx}`).textContent = teams[idx].score;
-      e.target.textContent = `+${currentQuestionValue}`;
+      e.target.textContent = `+${currentQuestionValue}`; // show correct points
     }
     if(e.target.classList.contains("subtract-btn")){
       const idx = e.target.dataset.index;
       teams[idx].score -= 100;
       document.getElementById(`score-${idx}`).textContent = teams[idx].score;
     }
-
-    // save scores
-    sessionStorage.setItem("scores", JSON.stringify(teams.map(t => t.score)));
   });
 
 });
