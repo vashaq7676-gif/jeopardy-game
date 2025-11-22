@@ -74,7 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ===== Build Board Headers =====
+  // ==== LOAD used boxes ====
+  const usedBoxes = JSON.parse(sessionStorage.getItem("usedBoxes")) || [];
+
+  // ===== Build Board =====
+  const pointsValues = [100,200,300,400,500,600,700,800,900,1000];
   data.categories.forEach(cat => {
     const header = document.createElement("div");
     header.className = "header";
@@ -82,36 +86,46 @@ document.addEventListener("DOMContentLoaded", () => {
     board.appendChild(header);
   });
 
-  // ===== Build Question Boxes =====
-  const pointsValues = [100,200,300,400,500,600,700,800,900,1000];
-  pointsValues.forEach(points => {
-    for(let c=0; c<data.categories.length; c++){
+  pointsValues.forEach((points, rowIndex) => {
+    data.categories.forEach((_, colIndex) => {
       const box = document.createElement("div");
       box.className = "box";
       box.textContent = points;
-      box.addEventListener("click", () => {
-        currentQuestionValue = points;
-        questionText.textContent = data.questions[points][c];
-        questionText.dataset.answer = data.answers[points][c];
-        modal.style.display = "flex";
 
-        // mark used
+      const boxID = `${rowIndex}-${colIndex}`; // UNIQUE ID
+
+      // if used, disable it
+      if (usedBoxes.includes(boxID)) {
         box.classList.add("used");
         box.style.pointerEvents = "none";
+      }
+
+      box.addEventListener("click", () => {
+        currentQuestionValue = points;
+        questionText.textContent = data.questions[points][colIndex];
+        questionText.dataset.answer = data.answers[points][colIndex];
+        modal.style.display = "flex";
+
+        // save used box
+        box.classList.add("used");
+        box.style.pointerEvents = "none";
+        usedBoxes.push(boxID);
+        sessionStorage.setItem("usedBoxes", JSON.stringify(usedBoxes));
       });
+
       board.appendChild(box);
-    }
+    });
   });
 
   // ===== Show Answer =====
   showAnswerBtn.onclick = () => {
     questionText.textContent = questionText.dataset.answer;
-  }
+  };
 
   // ===== Close Modal =====
   closeBtn.onclick = () => {
     modal.style.display = "none";
-  }
+  };
 
   // ===== Scoreboard Buttons =====
   scoreboard.addEventListener("click", e => {
@@ -127,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById(`score-${idx}`).textContent = teams[idx].score;
     }
 
-    // ==== SAVE current scores to session storage ====
+    // save scores
     sessionStorage.setItem("scores", JSON.stringify(teams.map(t => t.score)));
   });
 
