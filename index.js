@@ -1,9 +1,9 @@
 // ===== Default Teams =====
 const teams = [
-  { name: "Team 1", score: 0 },
-  { name: "Team 2", score: 0 },
-  { name: "Team 3", score: 0 },
-  { name: "Team 4", score: 0 }
+  { name: "Team 1", score: 0, scoreHistory: [] },
+  { name: "Team 2", score: 0, scoreHistory: [] },
+  { name: "Team 3", score: 0, scoreHistory: [] },
+  { name: "Team 4", score: 0, scoreHistory: [] }
 ];
 
 let currentQuestionValue = 0;
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <h3>${team.name}</h3>
       <p id="score-${i}">${team.score}</p>
       <button class="add-btn" data-index="${i}">+Points</button>
-      <button class="subtract-btn" data-index="${i}">-100</button>
+      <button class="subtract-btn" data-index="${i}">Undo Last</button>
     `;
     scoreboard.appendChild(div);
   });
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===== Show Answer (unchanged) =====
+  // ===== Show Answer =====
   showAnswerBtn.onclick = () => {
     questionText.textContent = questionText.dataset.answer;
   }
@@ -108,13 +108,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if(e.target.classList.contains("add-btn")){
       const idx = e.target.dataset.index;
       teams[idx].score += currentQuestionValue;
+      teams[idx].scoreHistory.push(currentQuestionValue); // track
       document.getElementById(`score-${idx}`).textContent = teams[idx].score;
-      e.target.textContent = `+${currentQuestionValue}`; // show correct points
+      e.target.textContent = `+${currentQuestionValue}`;
     }
     if(e.target.classList.contains("subtract-btn")){
       const idx = e.target.dataset.index;
-      teams[idx].score -= 100;
-      document.getElementById(`score-${idx}`).textContent = teams[idx].score;
+      const lastPoints = teams[idx].scoreHistory.pop(); // remove last
+      if(lastPoints){
+        teams[idx].score -= lastPoints;
+        document.getElementById(`score-${idx}`).textContent = teams[idx].score;
+      }
     }
   });
 
